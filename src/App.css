@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 100;
+  letter-spacing: .5px;
+}
+
+
+body {
+  padding: 3rem;
+}
+
+header nav {
+  display: flex;
+  justify-content: space-between;
+  place-items: center;
+}
+
+a {
+  color: rgba(0, 0, 0, 0.479);
+}
+
+.space {
+  padding: .25rem;
+}
+
+.row {
+  display: flex;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+input {
+  padding: 1rem;
+  height: 5rem;
+  width: 15rem;
+  font-size: 3rem;
+  border-radius: 5px;
+  border: 1px solid black;
+  text-align: center;
+}
+
+.inputs .input:not(:last-child){
+  margin-right: .5rem;
+}
+
+.dropdown {
+  border: 1px solid black;
+  border-radius: 5px;
+  min-width: 15rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.title{
+  padding: 1rem;
+  width: 100%;
+  text-align: center;
+}
+
+.dropdown * {
+  align-self: center;
+}
+
+.panel {
+  position: absolute;
+  background-color: white;
+  min-width: 15rem;
+  padding: .5rem 0;
+  border-radius: 5px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transform: translateY(3rem);
+  transition: .5s;
+
+
+}
+
+.visible {
+  overflow: visible;
+}
+
+.panel.slide-in{
+  transform: translateY(5rem);
+}
+
+.slide-out {
+  transform: translateY(4rem);
+}
+
+.panel button {
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 1rem;
+  background-color: whitesmoke;
+  justify-content: center;
+}
+
+.panel .icon{
+  font-size: 25px;
+}
+
+.panel button:hover {
+  background-color: royalblue;
+  color: white;
+  cursor: pointer;
+}
+
+.forecast{
+  padding: 1rem 3rem;
+  border-radius: 5px;
+  border: none;
+  background-color: royalblue;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  place-items: center;
+}
+
+.forecast .icon{
+  font-size: 20px;
+}
+
+.forecast:hover{
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+
+}
+
+.prices .metric{
+  padding: .5rem 1rem;
+  width: 100%;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+  height: 100%;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.val{
+  justify-content: space-between;
+  width: 100%;
+}
+
+.val * {
+  align-self: center;
+}
+
+.metric .icon{
+  font-size: 20px;
+  height: 5rem;
+  width: 5rem;
+  background-color: rgb(65, 105, 225);
+  border-radius: 5px;
+  padding: 1rem;
+  color: white;
+}
+
+.closed{
+  padding: .5rem;
+  background-color: rgba(255, 0, 0, 0.1);
+  font-size: 12px;
+  color: red;
+  border-radius: 5px;
+}
+
+.icon.sell{
+  background-color: rgb(225, 65, 65);
+  color: white;
+  border-radius: 50%;
+}
+
+.icon.buy{
+  border-radius: 50%;
+
+}
+
+.metric#buy{
+  border: 2px solid royalblue;
+}
+
+.metric#sell{
+  border: 2px solid rgb(225, 65, 65);
+}
+
+.metric#sell h2{
+  padding: .5rem;
+  background-color: rgba(255, 0, 0, 0.1);
+  font-size: 12px;
+  color: red;
+  border-radius: 5px;
+}
+
+.metric#buy h2{
+  padding: .5rem;
+  background-color: rgba(65, 105, 225, 0.1);
+  font-size: 12px;
+  color: royalblue;
+  border-radius: 5px;
+
+}
