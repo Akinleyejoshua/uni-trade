@@ -16,7 +16,7 @@ function App() {
     tickSymbol: "",
     year: date.getFullYear(),
     month: date.getMonth() + 1,
-    day: date.getDate() + 1,
+    day: date.getDate(),
     hr: date.getHours(),
     min: 0,
     tp: 0,
@@ -159,36 +159,42 @@ function App() {
         }}>
 
           <div className="inputs row">
+            {
+              state.interval === "1d" ? <>
+                <div className="input col">
+                  <small>Year</small>
+                  <div className="space"></div>
+                  <input type="text" value={state.year} className="year" placeholder='Year' onChange={e => handleState("year", e.target.value)} />
+                </div>
+                <div className="input col">
+                  <small>Month</small>
+                  <div className="space"></div>
+                  <input type="text" value={state.month} className="month" placeholder='Month' onChange={e => handleState("month", e.target.value)} />
+                </div>
+                <div className="input col">
+                  <small>Day</small>
+                  <div className="space"></div>
+                  <input type="text" value={state.day} className="day" placeholder='Day' onChange={e => handleState("day", e.target.value)} />
 
-            <div className="input col">
-              <small>Year</small>
-              <div className="space"></div>
-              <input disabled={state.interval === "1h" ? true : false} type="text" value={state.year} className="year" placeholder='Year' onChange={e => handleState("year", e.target.value)} />
-            </div>
-            <div className="input col">
-              <small>Month</small>
-              <div className="space"></div>
-              <input disabled={state.interval === "1h" ? true : false} type="text" value={state.month} className="month" placeholder='Month' onChange={e => handleState("month", e.target.value)} />
-            </div>
-            <div className="input col">
-              <small>Day</small>
-              <div className="space"></div>
-              <input disabled={state.interval === "1h" ? true : false} type="text" value={state.day} className="day" placeholder='Day' onChange={e => handleState("day", e.target.value)} />
+                </div>
 
-            </div>
+              </> :
 
-            <div className="input col">
-              <small>Hour</small>
-              <div className="space"></div>
-              <input disabled={state.interval === "1d" ? true : false} type="text" value={state.hr} className="hr" placeholder='Hour' onChange={e => handleState("hr", e.target.value)} />
+                <>
+                  <div className="input col">
+                    <small>Hour</small>
+                    <div className="space"></div>
+                    <input type="text" value={state.hr} className="hr" placeholder='Hour' onChange={e => handleState("hr", e.target.value)} />
 
-            </div>
-            <div className="input col">
-              <small>Minutes</small>
-              <div className="space"></div>
-              <input disabled={state.interval === "1d" ? true : false} type="text" value={state.min} className="min" placeholder='Minutes' onChange={e => handleState("min", e.target.value)} />
+                  </div>
+                  <div className="input col">
+                    <small>Minutes</small>
+                    <div className="space"></div>
+                    <input type="text" value={state.min} className="min" placeholder='Minutes' onChange={e => handleState("min", e.target.value)} />
 
-            </div>
+                  </div>
+                </>
+            }
 
 
           </div>
