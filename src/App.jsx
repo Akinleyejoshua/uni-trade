@@ -17,7 +17,7 @@ function App() {
     year: date.getFullYear(),
     month: date.getMonth() + 1,
     day: date.getDate() + 1,
-    hr: date.getHours(),
+    hr: date.getHours() - 12,
     min: 0,
     tp: 0,
     price: 0,
@@ -41,6 +41,7 @@ function App() {
       connection.removeEventListener("message", () => { }, false)
       console.log(await tickStream().unsubscribe());
       handleState("tick", undefined)
+      window?.location.reload()
     } else {
       if (data.msg_type === "tick") {
         // console.log(data)
@@ -80,7 +81,7 @@ function App() {
 
   const forecast = async () => {
     const { symbol, year, month, day, hr, min, interval } = state;
-    const req = await request.get(`/api/forecast?symbol=${symbol}&year=${year}&month=${month}&day=${day}&hours=${hr}&minutes=${min}&sec=00&interval=${interval}`);
+    const req = await request.get(`/api/forecast?symbol=${symbol}&year=${year}&month=${month}&day=${day}&hours=${hr+12}&minutes=${min}&sec=00&interval=${interval}`);
     const data = req.data;
     const price = data.price;
     if (price !== 0) {

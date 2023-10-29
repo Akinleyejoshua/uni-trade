@@ -251,5 +251,22 @@ input:disabled:hover{
 }
 
 @media screen and (max-width: 740px){
+  *{
+    font-size: 12px;
+  }
 
+  body{
+    padding: 2rem;
+  }
+
+  input {
+    padding: .0rem;
+    height: 4rem;
+    /* width: 15rem; */
+    width: 100%;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid black;
+    text-align: center;
+  }
 }
