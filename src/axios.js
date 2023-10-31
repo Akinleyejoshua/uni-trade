@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 export const request = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: "https://uni-trade-api-production.up.railway.app",
     headers: {
         Accept: 'application/json,text/plain,*/*',
         'Content-Type': 'application/json',
