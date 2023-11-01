@@ -6,12 +6,22 @@
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
   font-weight: 100;
-  letter-spacing: .5px;
+  letter-spacing: 1px;
 }
 
+header {
+  position: fixed;
+  background-color: white;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+  left: 0;
+  right: 0;
+  top: 0;
+  padding: 1rem 3rem;
+  z-index: 1000;
+}
 
 body {
-  padding: 3rem;
+  padding: 6rem 3rem 3rem 3rem;
 }
 
 header nav {
@@ -20,7 +30,7 @@ header nav {
   place-items: center;
 }
 
-nav button{
+nav button {
   padding: .5rem;
   border: none;
   border-radius: 50%;
@@ -36,13 +46,13 @@ nav button{
 }
 
 
-nav button.active{
+nav button.active {
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
-  border: 2px solid rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(0, 0, 0, 0.05);
   background-color: white;
 }
 
-nav button:hover{
+nav button:hover {
   background-color: royalblue;
   color: white;
 }
@@ -77,28 +87,32 @@ input {
   width: 100%;
   font-size: 3rem;
   border-radius: 5px;
-  border: 1px solid black;
+  border: 1px solid royalblue;
   text-align: center;
+  background-color: rgba(65, 105, 225, 0.0);
+  color: royalblue;
 }
 
-input:disabled:hover{
+input:disabled:hover {
   cursor: not-allowed;
 }
 
-.inputs .input:not(:last-child){
+.inputs .input:not(:last-child) {
   margin-right: .5rem;
 }
 
 .dropdown {
-  border: 1px solid black;
+  border: 1px solid royalblue;
   border-radius: 5px;
   min-width: 15rem;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  background-color: rgba(65, 105, 225, 0.0);
+  color: royalblue;
 }
 
-.title{
+.title {
   padding: 1rem;
   width: 100%;
   text-align: center;
@@ -114,9 +128,8 @@ input:disabled:hover{
   min-width: 15rem;
   padding: .5rem 0;
   border-radius: 5px;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  transform: translateY(3rem);
   transition: .5s;
 
 
@@ -126,8 +139,8 @@ input:disabled:hover{
   overflow: visible;
 }
 
-.panel.slide-in{
-  transform: translateY(5rem);
+.panel.slide-in {
+  transform: translateY(6rem);
 }
 
 .slide-out {
@@ -141,9 +154,25 @@ input:disabled:hover{
   padding: 1rem;
   background-color: whitesmoke;
   justify-content: center;
+  /* color: royalblue; */
+  border-radius: 0px;
+  color: rgba(0, 0, 0, 0.6);
+
 }
 
-.panel .icon{
+/* .panel button:not(:last-child){
+  margin-bottom: .5rem;
+} */
+
+.blue {
+  color: royalblue;
+}
+
+.time {
+  text-transform: capitalize;
+}
+
+.panel .icon {
   font-size: 25px;
 }
 
@@ -153,7 +182,7 @@ input:disabled:hover{
   cursor: pointer;
 }
 
-.forecast{
+.forecast {
   padding: 1rem 3rem;
   border-radius: 5px;
   border: none;
@@ -165,48 +194,58 @@ input:disabled:hover{
   place-items: center;
 }
 
-.forecast .icon{
+.forecast .icon {
   font-size: 20px;
 }
 
-.forecast:hover{
+.forecast:hover {
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-
 }
 
-.prices .metric{
-  padding: 1rem;
+.forecast:active {
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+}
+
+.prices .metric {
+  padding: 1rem 1.25rem;
   width: 100%;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.0);
   height: 100%;
-  background-color: white;
   border-radius: 5px;
+  background-color: whitesmoke;
 }
 
-.val{
+.metric:hover {
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  cursor: pointer;
+}
+
+.val {
   justify-content: space-between;
   width: 100%;
 }
 
-.val h2{
+.val h2 {
   color: royalblue;
+  /* font-size: 15px; */
 }
 
 .val * {
   align-self: center;
 }
 
-.metric .icon{
+.metric .icon {
   font-size: 20px;
   height: 5rem;
   width: 5rem;
   background-color: rgb(65, 105, 225);
-  border-radius: 5px;
+  border-radius: 50%;
   padding: 1rem;
   color: white;
 }
 
-.closed{
+.closed {
   padding: .5rem;
   background-color: rgba(255, 0, 0, 0.1);
   font-size: 12px;
@@ -214,26 +253,26 @@ input:disabled:hover{
   border-radius: 5px;
 }
 
-.icon.sell{
+.icon.sell {
   background-color: rgb(225, 65, 65);
   color: white;
   border-radius: 50%;
 }
 
-.icon.buy{
+.icon.buy {
   border-radius: 50%;
 
 }
 
-.metric#buy{
+.metric#buy {
   border: 2px solid royalblue;
 }
 
-.metric#sell{
+.metric#sell {
   border: 2px solid rgb(225, 65, 65);
 }
 
-.metric#sell h2{
+.metric#sell h2 {
   padding: .5rem;
   background-color: rgba(255, 0, 0, 0.1);
   font-size: 12px;
@@ -241,7 +280,7 @@ input:disabled:hover{
   border-radius: 5px;
 }
 
-.metric#buy h2{
+.metric#buy h2 {
   padding: .5rem;
   background-color: rgba(65, 105, 225, 0.1);
   font-size: 12px;
@@ -250,13 +289,17 @@ input:disabled:hover{
 
 }
 
-@media screen and (max-width: 740px){
-  *{
+@media screen and (max-width: 740px) {
+  header {
+    padding: 1rem 2rem;
+  }
+
+  div {
     font-size: 12px;
   }
 
-  body{
-    padding: 2rem;
+  body {
+    padding: 6rem 2rem 2rem 2rem;
   }
 
   input {
@@ -266,7 +309,12 @@ input:disabled:hover{
     width: 100%;
     font-size: 1rem;
     border-radius: 5px;
-    border: 1px solid black;
     text-align: center;
+  }
+
+  .metric .icon {
+    height: 3rem;
+    width: 3rem;
+    padding: .5rem;
   }
 }

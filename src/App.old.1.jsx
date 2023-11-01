@@ -15,7 +15,7 @@ function App() {
     symbol: "",
     tickSymbol: "",
     year: date.getFullYear(),
-    month: date.getMonth() + 1,
+    month: date.getMonth(),
     day: date.getDate(),
     hr: date.getHours(),
     min: date.getMinutes(),
@@ -23,13 +23,11 @@ function App() {
     price: 0,
     sl: 0,
     order: "neutral",
-    interval: "1dd",
-
+    interval: "1d",
   })
 
-
   const days = ["mon", "tue", "wed", "thur", "fri", "sat", "sun"]
-  const months = ["", "jan", "feb", "march", "apr", "may", "june", "july", "aug", "sep", "oct", "nov", "dec"]
+  const months = ["jan", "feb", "march", "apr", "may", "june", "july", "aug", "sep", "oct", "nov", "dec"]
 
   const handleState = (name, val) => {
     setState(prevState => ({
@@ -38,73 +36,29 @@ function App() {
     }))
   }
 
-  const [ticks, setTicks] = useState({
-    BTCUSD: {
-      tick: 0,
-      pip: 0,
-    },
-    EURUSD: {
-      tick: 0,
-      pip: 0,
-    },
-    GBPUSD: {
-      tick: 0,
-      pip: 0,
-    }
-  })
+  const tickStream = () => api2.subscribe({ ticks: state.tickSymbol })
 
-  const tickStream = (symbol) => api2.subscribe({ ticks: symbol })
-
-  const streamTicks = async (symbol, name) => {
-    const tick = await tickStream(symbol);
-
-  }
-
-  connection.addEventListener("message", (res) => {
+  const tickResponse = async (res) => {
     const data = JSON.parse(res.data);
-    const tick = data;
-
     if (data.error?.code === "MarketIsClosed") {
+
       handleState("tick", undefined)
+      window?.location.reload()
     }
 
     if (data.msg_type === "tick") {
-      if (tick.echo_req.ticks === "cryBTCUSD") {
-
-        setTicks(prev => ({
-          ...prev,
-          BTCUSD: {
-            ...prev.BTCUSD,
-            tick: tick?.tick?.bid,
-            pip: tick?.tick?.pip_size
-          }
-        }))
-      } else if (tick.echo_req.ticks === "frxEURUSD") {
-        setTicks(prev => ({
-          ...prev,
-          EURUSD: {
-            ...prev.EURUSD,
-            tick: tick?.tick?.bid,
-            pip: tick?.tick?.pip_size
-          }
-        }))
-      } else if (tick.echo_req.ticks === "frxGBPUSD") {
-        setTicks(prev => ({
-          ...prev,
-          GBPUSD: {
-            ...prev.GBPUSD,
-            tick: tick?.tick?.bid,
-            pip: tick?.tick?.pip_size
-          }
-        }))
-      }
-      // console.log(ticks)
-      state.symbol === "BTCUSD" && handleState("tick", ticks.BTCUSD.tick);
-      state.symbol === "GBPUSD" && handleState("tick", ticks.GBPUSD.tick);
-      state.symbol === "EURUSD" && handleState("tick", ticks.EURUSD.tick);
+      // console.log(data)
+      handleState("tick", parseFloat(data.tick?.bid))
+      handleState("pip", data.tick?.pip_size)
     }
 
-  });
+  }
+
+  const streamTicks = async () => {
+    await tickStream()
+  }
+
+  connection.addEventListener("message", tickResponse)
 
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const [selectSymbol, setSelectSymbol] = useState("Select Symbol");
@@ -115,14 +69,14 @@ function App() {
 
     if (tick > price) {
       handleState("order", "sell")
-      const tp = Number(parseFloat(price) - (len)).toFixed(4)
+      const tp = parseFloat(price) - (len)
       const sl = Number(parseFloat(price) + (len)).toFixed(4)
       handleState("price", price)
       handleState("tp", tp)
       handleState("sl", sl)
     } else if (tick < price) {
       handleState("order", "buy")
-      const tp = Number(parseFloat(price) + (len)).toFixed(4)
+      const tp = parseFloat(price) + (len)
       const sl = Number(parseFloat(price) - (len)).toFixed(4)
       handleState("price", price)
       handleState("tp", tp)
@@ -136,14 +90,13 @@ function App() {
     const { symbol, year, month, day, hr, min, interval } = state;
     const req = await request.get(`/api/forecast?symbol=${symbol}&year=${year}&month=${month}&day=${day}&hours=${hr}&minutes=${min}&sec=00&interval=${interval}`);
     const data = req.data;
-    const price = parseFloat(data?.price);
-    // console.log(data)
+    const price = parseFloat(data.price);
     if (price !== 0) {
 
       if (price < 1) {
-        setPrice(0.001, price)
-      } else if (price < 10) {
         setPrice(0.01, price)
+      } else if (price < 10) {
+        setPrice(0.1, price)
       } else if (price < 100) {
         setPrice(1, price)
       } else if (price < 1000) {
@@ -177,7 +130,6 @@ function App() {
           <div className="nav-links">
             <button onClick={() => handleState("interval", "1h")} className={`${state.interval === "1h" ? "active" : ""}`}>1H</button>
             <button onClick={() => handleState("interval", "1d")} className={`${state.interval === "1d" ? "active" : ""}`}>1D</button>
-            <button onClick={() => handleState("interval", "1dd")} className={`${state.interval === "1dd" ? "active" : ""}`}>1D+</button>
           </div>
         </nav>
 
@@ -200,7 +152,7 @@ function App() {
                   handleState("symbol", item.symbol);
                   handleState("tickSymbol", item.tickSymbol);
                   setSelectSymbol(item.name);
-                  streamTicks(item.tickSymbol, item.symbol);
+                  streamTicks();
                 }}>
                   <p>{item.name}</p>
                   <div className="space"></div>
@@ -223,30 +175,30 @@ function App() {
             <div className="input col">
               <small>Year</small>
               <div className="space"></div>
-              <input disabled={state.interval === "1h" ? true : false} type="number" value={state.year} className="year" placeholder='Year' onChange={e => handleState("year", e.target.value)} />
+              <input disabled={state.interval === "1h" ? true : false} type="text" value={state.year} className="year" placeholder='Year' onChange={e => handleState("year", e.target.value)} />
             </div>
             <div className="input col">
               <small>Month</small>
               <div className="space"></div>
-              <input disabled={state.interval === "1h" ? true : false} type="number" value={state.month} className="month" placeholder='Month' onChange={e => handleState("month", e.target.value)} />
+              <input disabled={state.interval === "1h" ? true : false} type="text" value={state.month} className="month" placeholder='Month' onChange={e => handleState("month", e.target.value)} />
             </div>
             <div className="input col">
               <small>Day</small>
               <div className="space"></div>
-              <input disabled={state.interval === "1h" ? true : false} type="number" value={state.day} className="day" placeholder='Day' onChange={e => handleState("day", e.target.value)} />
+              <input disabled={state.interval === "1h" ? true : false} type="text" value={state.day} className="day" placeholder='Day' onChange={e => handleState("day", e.target.value)} />
 
             </div>
 
             <div className="input col">
               <small>Hour</small>
               <div className="space"></div>
-              <input disabled={state.interval === "1d" ? true : false} type="number" value={state.hr} className="hr" placeholder='Hour' onChange={e => handleState("hr", e.target.value)} />
+              <input disabled={state.interval === "1d" ? true : false} type="text" value={state.hr} className="hr" placeholder='Hour' onChange={e => handleState("hr", e.target.value)} />
 
             </div>
             <div className="input col">
               <small>Minutes</small>
               <div className="space"></div>
-              <input disabled={state.interval === "1d" ? true : false} type="number" value={state.min} className="min" placeholder='Minutes' onChange={e => handleState("min", e.target.value)} />
+              <input disabled={state.interval === "1d" ? true : false} type="text" value={state.min} className="min" placeholder='Minutes' onChange={e => handleState("min", e.target.value)} />
 
             </div>
 
@@ -259,36 +211,39 @@ function App() {
               <div className="space"></div>
               <div className="space"></div>
 
-              <div className="time row">
-                <p>Forecasting for </p>
-                <div className="space"></div>
-                <p className='blue'>
-                  {days[date.getDay() - 1]} {state.day} {months[state.month]}  {state.year}
-                </p>
-              </div>
-
-              <div className="space"></div>
-              <div className="space"></div>
-              <div className="space"></div>
-
               <div className="actions row">
                 <button className="forecast row" onClick={forecast}>
                   <p>Forecast</p>
                   <div className="space"></div>
                   <SiRobotframework className='icon' />
                 </button>
+                {/* <div className="space"></div>
+                <button className="forecast row" onClick={() => connection.addEventListener("message", forecast)}>
+                  <p>Auto Forecast</p>
+                  <div className="space"></div>
+                  <SiRobotframework className='icon' />
+                </button> */}
               </div>
 
               <div className="space"></div>
               <div className="space"></div>
               <div className="space"></div>
 
+              <div className="time">
+                Forecasting for
+                <p className='blue'>
+                  {months[state.month]} {days[date.getDay() - 1]} {state.day === 1 ? state.day : state.day - 1}
+                </p>
+              </div>
+              <div className="space"></div>
+              <div className="space"></div>
+              <div className="space"></div>
 
               <div className="grid prices">
                 <div className="metric col">
                   <div className="row val">
                     <small>current price</small>
-                    <h2>{state.tick === undefined ? <small className='closed'>closed</small> : (state.tick)}</h2>
+                    <h2>{state.tick === undefined ? <small className='closed'>closed</small> : state.tick}</h2>
                   </div>
                   <div className="space"></div>
 
