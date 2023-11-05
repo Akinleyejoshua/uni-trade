@@ -23,12 +23,12 @@ function App() {
     price: 0,
     sl: 0,
     order: "neutral",
-    interval: "1dd",
-
+    interval: "1d",
+    pend: 0,
   })
 
 
-  const days = ["mon", "tue", "wed", "thur", "fri", "sat", "sun"]
+  // const days = ["mon", "tue", "wed", "thur", "fri", "sat", "sun"]
   const months = ["", "jan", "feb", "march", "apr", "may", "june", "july", "aug", "sep", "oct", "nov", "dec"]
 
   const handleState = (name, val) => {
@@ -56,7 +56,7 @@ function App() {
   const tickStream = (symbol) => api2.subscribe({ ticks: symbol })
 
   const streamTicks = async (symbol, name) => {
-    const tick = await tickStream(symbol);
+    await tickStream(symbol);
 
   }
 
@@ -99,9 +99,9 @@ function App() {
         }))
       }
       // console.log(ticks)
-      state.symbol === "BTCUSD" && handleState("tick", ticks.BTCUSD.tick);
-      state.symbol === "GBPUSD" && handleState("tick", ticks.GBPUSD.tick);
-      state.symbol === "EURUSD" && handleState("tick", ticks.EURUSD.tick);
+      state.symbol === "BTC-USD" && handleState("tick", ticks.BTCUSD.tick);
+      state.symbol === "GBPUSD=X" && handleState("tick", ticks.GBPUSD.tick);
+      state.symbol === "EURUSD=X" && handleState("tick", ticks.EURUSD.tick);
     }
 
   });
@@ -117,16 +117,23 @@ function App() {
       handleState("order", "sell")
       const tp = Number(parseFloat(price) - (len)).toFixed(4)
       const sl = Number(parseFloat(price) + (len)).toFixed(4)
+      const pend = Number(parseFloat(price) + (len)).toFixed(4)
       handleState("price", price)
       handleState("tp", tp)
       handleState("sl", sl)
+      handleState("pend", pend)
+
     } else if (tick < price) {
       handleState("order", "buy")
       const tp = Number(parseFloat(price) + (len)).toFixed(4)
       const sl = Number(parseFloat(price) - (len)).toFixed(4)
+      const pend = Number(parseFloat(price) - (len)).toFixed(4)
+
       handleState("price", price)
       handleState("tp", tp)
       handleState("sl", sl)
+      handleState("pend", pend)
+
     }
 
   }
@@ -137,6 +144,7 @@ function App() {
     const req = await request.get(`/api/forecast?symbol=${symbol}&year=${year}&month=${month}&day=${day}&hours=${hr}&minutes=${min}&sec=00&interval=${interval}`);
     const data = req.data;
     const price = parseFloat(data?.price);
+ 
     // console.log(data)
     if (price !== 0) {
 
@@ -154,6 +162,7 @@ function App() {
         } else {
           setPrice(25, price)
         }
+
       }
 
     } else {
@@ -161,6 +170,12 @@ function App() {
       alert("Symbol not available for forecast")
     }
 
+  }
+
+  const train = async () => {
+    const req = await request.get(`/api/trainmodel?symbol=${state.symbol}`);
+    const data = req.data;
+    data?.message === "done" && alert("Done training model")
   }
 
   useEffect(() => {
@@ -175,9 +190,7 @@ function App() {
             <a href="/">UNI-TRADE</a>
           </div>
           <div className="nav-links">
-            <button onClick={() => handleState("interval", "1h")} className={`${state.interval === "1h" ? "active" : ""}`}>1H</button>
             <button onClick={() => handleState("interval", "1d")} className={`${state.interval === "1d" ? "active" : ""}`}>1D</button>
-            <button onClick={() => handleState("interval", "1dd")} className={`${state.interval === "1dd" ? "active" : ""}`}>1D+</button>
           </div>
         </nav>
 
@@ -191,9 +204,9 @@ function App() {
             <div className='title' onClick={() => setToggleDropdown(!toggleDropdown)}>{selectSymbol}</div>
             <div className={`${toggleDropdown ? "panel col slide-out" : "panel col slide-in"}`}>
               {[
-                { name: "BTC vs USD", tickSymbol: "cryBTCUSD", symbol: "BTCUSD", icon: <SiBitcoin className='icon' /> },
-                { name: "GBP vs USD", tickSymbol: "frxGBPUSD", symbol: "GBPUSD", icon: <AiOutlineDollarCircle className='icon' /> },
-                { name: "EUR vs USD", tickSymbol: "frxEURUSD", symbol: "EURUSD", icon: <AiOutlineDollarCircle className='icon' /> }
+                { name: "BTC vs USD", tickSymbol: "cryBTCUSD", symbol: "BTC-USD", icon: <SiBitcoin className='icon' /> },
+                { name: "GBP vs USD", tickSymbol: "frxGBPUSD", symbol: "GBPUSD=X", icon: <AiOutlineDollarCircle className='icon' /> },
+                { name: "EUR vs USD", tickSymbol: "frxEURUSD", symbol: "EURUSD=X", icon: <AiOutlineDollarCircle className='icon' /> }
               ].map((item, i) => {
                 return <button className='row' key={i} onClick={() => {
                   setToggleDropdown(false)
@@ -201,6 +214,13 @@ function App() {
                   handleState("tickSymbol", item.tickSymbol);
                   setSelectSymbol(item.name);
                   streamTicks(item.tickSymbol, item.symbol);
+                  handleState("high", "")
+                  handleState("price", 0)
+                  handleState("tp", 0)
+                  handleState("sl", 0)
+                  handleState("pend", 0)
+                  handleState("order", "neutral")
+
                 }}>
                   <p>{item.name}</p>
                   <div className="space"></div>
@@ -263,7 +283,7 @@ function App() {
                 <p>Forecasting for </p>
                 <div className="space"></div>
                 <p className='blue'>
-                  {days[date.getDay() - 1]} {state.day} {months[state.month]}  {state.year}
+                  {state.day} {months[state.month]}  {state.year}
                 </p>
               </div>
 
@@ -274,6 +294,12 @@ function App() {
               <div className="actions row">
                 <button className="forecast row" onClick={forecast}>
                   <p>Forecast</p>
+                  <div className="space"></div>
+                  <SiRobotframework className='icon' />
+                </button>
+                <div className="space"></div>
+                <button className="forecast row" onClick={train}>
+                  <p>Train model</p>
                   <div className="space"></div>
                   <SiRobotframework className='icon' />
                 </button>
@@ -288,7 +314,7 @@ function App() {
                 <div className="metric col">
                   <div className="row val">
                     <small>current price</small>
-                    <h2>{state.tick === undefined ? <small className='closed'>closed</small> : (state.tick)}</h2>
+                   {state.tick === undefined ? <small className='closed'>closed</small> : <h2>{state.tick}</h2>}
                   </div>
                   <div className="space"></div>
 
@@ -322,12 +348,13 @@ function App() {
                   <FaMoneyBillTrendUp className='icon' />
                 </div>
 
-                {(state.order !== "neutral" && state.tick !== 0)
+                {(state.order !== "neutral" && state.tick !== 0 && state.tick !== undefined)
                   &&
                   <div className="metric col" id={`${state.order === "buy" ? "buy" : "sell"}`}>
                     <div className="row val">
                       <small>order now</small>
-                      <h2>{state.order}</h2>
+                      {/* <h2>{state.order}</h2> */}
+                      <h2>{state.order} {state.pend !== "" && <>@ {state.pend}</>}</h2>
                     </div>
                     <div className="space"></div>
 

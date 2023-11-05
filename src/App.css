@@ -30,6 +30,12 @@ header nav {
   place-items: center;
 }
 
+nav a {
+  text-decoration: none;
+  font-size: 2rem;
+  color: royalblue;
+}
+
 nav button {
   padding: .5rem;
   border: none;
@@ -228,7 +234,11 @@ input:disabled:hover {
 
 .val h2 {
   color: royalblue;
-  /* font-size: 15px; */
+  background-color: rgba(65, 105, 225, 0.1);
+  font-size: 15px;
+  padding: .25rem .5rem;
+  border-radius: 5px;
+  cursor: text;
 }
 
 .val * {
