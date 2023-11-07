@@ -114,9 +114,9 @@ function App() {
 
     if (tick > price) {
       handleState("order", "sell")
-      const tp = Number(parseFloat(price) - (len)).toFixed(4)
-      const sl = Number(parseFloat(price) + (len)).toFixed(4)
-      const pend = Number(parseFloat(price) + (len)).toFixed(4)
+      const tp = Number(parseFloat(price) - (len)).toFixed(0)
+      const sl = Number(parseFloat(price) + (len)).toFixed(0)
+      const pend = Number(parseFloat(price) + (len)).toFixed(0)
       handleState("price", price)
       handleState("tp", tp)
       handleState("sl", sl)
@@ -124,9 +124,9 @@ function App() {
 
     } else if (tick < price) {
       handleState("order", "buy")
-      const tp = Number(parseFloat(price) + (len)).toFixed(4)
-      const sl = Number(parseFloat(price) - (len)).toFixed(4)
-      const pend = Number(parseFloat(price) - (len)).toFixed(4)
+      const tp = Number(parseFloat(price) + (len)).toFixed(0)
+      const sl = Number(parseFloat(price) - (len)).toFixed(0)
+      const pend = Number(parseFloat(price) - (len)).toFixed(0)
 
       handleState("price", price)
       handleState("tp", tp)
@@ -142,7 +142,7 @@ function App() {
     const { symbol, year, month, day, hr, min, interval } = state;
     const req = await request.get(`/api/forecast?symbol=${symbol}&year=${year}&month=${month}&day=${day}&hours=${hr}&minutes=${min}&sec=00&interval=${interval}`);
     const data = req.data;
-    const price = parseFloat(data?.price);
+    const price = parseFloat(data?.price).toFixed(0);
 
     // console.log(data)
     if (price !== 0) {
