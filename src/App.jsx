@@ -106,8 +106,7 @@ function App() {
 
   });
 
-  const [toggleDropdown, setToggleDropdown] = useState(false);
-  const [selectSymbol, setSelectSymbol] = useState("Select Symbol");
+
 
   const setPrice = (len, price) => {
     const { tick } = state;
@@ -144,7 +143,7 @@ function App() {
     const req = await request.get(`/api/forecast?symbol=${symbol}&year=${year}&month=${month}&day=${day}&hours=${hr}&minutes=${min}&sec=00&interval=${interval}`);
     const data = req.data;
     const price = parseFloat(data?.price);
- 
+
     // console.log(data)
     if (price !== 0) {
 
@@ -171,17 +170,21 @@ function App() {
     }
 
   }
+  const [msgSucess, setMsgSuccess] = useState("")
 
   const train = async () => {
+    setMsgSuccess("Training model!")
     const req = await request.get(`/api/trainmodel?symbol=${state.symbol}`);
     const data = req.data;
-    data?.message === "done" && alert("Done training model")
+    data?.message === "done" && setMsgSuccess("Done training model!")
   }
 
   useEffect(() => {
     streamTicks()
   }, [state])
 
+  const [toggleDropdown, setToggleDropdown] = useState(false);
+  const [selectSymbol, setSelectSymbol] = useState({ name: "Select Symbol", icon: <AiOutlineDollarCircle className='icon' /> });
   return (
     <>
       <header>
@@ -201,7 +204,11 @@ function App() {
         <div className="space"></div>
         <div className="row">
           <div className={`${toggleDropdown ? "dropdown col visible" : "dropdown col"}`}>
-            <div className='title' onClick={() => setToggleDropdown(!toggleDropdown)}>{selectSymbol}</div>
+            <div className='title row' onClick={() => setToggleDropdown(!toggleDropdown)}>
+              <p>{selectSymbol.name}</p>
+              <div className="space"></div>
+              {selectSymbol.icon}
+            </div>
             <div className={`${toggleDropdown ? "panel col slide-out" : "panel col slide-in"}`}>
               {[
                 { name: "BTC vs USD", tickSymbol: "cryBTCUSD", symbol: "BTC-USD", icon: <SiBitcoin className='icon' /> },
@@ -212,7 +219,7 @@ function App() {
                   setToggleDropdown(false)
                   handleState("symbol", item.symbol);
                   handleState("tickSymbol", item.tickSymbol);
-                  setSelectSymbol(item.name);
+                  setSelectSymbol({ name: item.name, icon: item.icon });
                   streamTicks(item.tickSymbol, item.symbol);
                   handleState("high", "")
                   handleState("price", 0)
@@ -220,6 +227,7 @@ function App() {
                   handleState("sl", 0)
                   handleState("pend", 0)
                   handleState("order", "neutral")
+                  setMsgSuccess("")
 
                 }}>
                   <p>{item.name}</p>
@@ -308,13 +316,13 @@ function App() {
               <div className="space"></div>
               <div className="space"></div>
               <div className="space"></div>
-
+              {msgSucess !== "" && <div className="msg-success">{msgSucess}</div>}
 
               <div className="grid prices">
                 <div className="metric col">
                   <div className="row val">
                     <small>current price</small>
-                   {state.tick === undefined ? <small className='closed'>closed</small> : <h2>{state.tick}</h2>}
+                    {state.tick === undefined ? <small className='closed'>closed</small> : <h2>{state.tick}</h2>}
                   </div>
                   <div className="space"></div>
 
